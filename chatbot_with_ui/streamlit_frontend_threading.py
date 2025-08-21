@@ -20,8 +20,21 @@ def add_thread(thread_id):
     if thread_id not in st.session_state['chat_threads']:
         st.session_state['chat_threads'].append(thread_id)
 
+# def load_conversation(thread_id):
+#     return chatbot.get_state(config={'configurable': {'thread_id': thread_id}}).values['messages']
+
+
 def load_conversation(thread_id):
-    return chatbot.get_state(config={'configurable': {'thread_id': thread_id}}).values['messages']
+    state = chatbot.get_state(config={'configurable': {'thread_id': thread_id}})
+    
+    # Handle both dict and object with .values
+    values = state.values if hasattr(state, "values") else state.get("values", {})
+    
+    if values and "messages" in values:
+        return values["messages"]
+    else:
+        return []
+
 
 
 # **************************************** Session Setup ******************************
@@ -44,24 +57,44 @@ if st.sidebar.button("New Chat"):
 st.sidebar.header("My Conversations")
 
 
+# for thread_id in st.session_state['chat_threads'][::-1]:
+#     if st.sidebar.button(str(thread_id)):
+#         st.session_state['thread_id'] = thread_id
+#         messages = load_conversation(thread_id)
+
+#         temp_messages = []
+
+#         for msg in messages:
+#             if isinstance(msg, HumanMessage):
+#                 role = 'user'
+#             else:
+#                 role='assistant'
+#             temp_messages.append({'role': role, 'content': msg.content})
+
+#         st.session_state['message_history'] = temp_messages
+
+
 for thread_id in st.session_state['chat_threads'][::-1]:
-    if st.sidebar.button(str(thread_id)):
+    messages = load_conversation(thread_id)
+
+    # Show the first message if available
+    if messages:
+        first_msg = messages[0].content
+        preview_text = (first_msg[:40] + "...") if len(first_msg) > 40 else first_msg
+    else:
+        preview_text = f"Thread {thread_id}"
+
+    if st.sidebar.button(preview_text, key=f"btn_{thread_id}"):
         st.session_state['thread_id'] = thread_id
-        messages = load_conversation(thread_id)
 
         temp_messages = []
-
         for msg in messages:
-            if isinstance(msg, HumanMessage):
-                role = 'user'
-            else:
-                role='assistant'
+            role = 'user' if isinstance(msg, HumanMessage) else 'assistant'
             temp_messages.append({'role': role, 'content': msg.content})
 
         st.session_state['message_history'] = temp_messages
+
                 
-
-
 
 # **************************************** Main UI ************************************
 # loading the conversation history

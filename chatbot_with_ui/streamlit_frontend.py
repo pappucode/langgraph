@@ -16,8 +16,8 @@ for message in st.session_state['message_history']:
         st.text(message['content'])
 
 
-#{'role': 'user', 'content': 'hi'}
-#{'role': 'assistant', 'content': 'hello'}
+#[{'role': 'user', 'content': 'hi'}
+#{'role': 'assistant', 'content': 'hello'}]
 
 user_input = st.chat_input('Type here')
 
