@@ -40,13 +40,12 @@ graph.add_edge('chat_node', END)
 
 chatbot = graph.compile(checkpointer=checkpointer)
 
-CONFIG = {'configurable': {'thread_id': 'thread-2'}}
-response = chatbot.invoke(
-                {'messages': [HumanMessage(content='what is the capital of Bangladesh. Acknowledge my name while answering.')]},
-                config= CONFIG,
-            )
+def retrieve_all_threads():
+    all_threads = set()
+    # it provide the total number of checkpoints store in the database
+    for checkpoint in checkpointer.list(None):
+        all_threads.add(checkpoint.config['configurable']['thread_id'])
 
-print(response)
-        
+    return list(all_threads)
 
     
