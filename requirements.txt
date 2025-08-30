@@ -27,3 +27,6 @@ pypdf
 
 # Streamlit
 Streamlit
+
+# langsmith
+langsmith
